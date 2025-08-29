@@ -12,14 +12,18 @@
             container.appendChild(title);
 
             // ปุ่มเริ่มต้น
-            const startButton = document.createElement('button');
+            let startButton = document.createElement('button');
             startButton.textContent = "Click me to display Date and Time";
             container.appendChild(startButton);
 
             // ปุ่มแสดงเวลา
-            const timeButton = document.createElement('button');
+            let timeButton = document.createElement('button');
             timeButton.style.display = "none";
             container.appendChild(timeButton);
+
+            // ตัวเก็บสีล่าสุด
+            let lastBgColor = "#000000";
+            let lastTextColor = "#FFFFFF";
 
             // Web Worker
             const worker = new Worker('web_worker.js');
@@ -27,40 +31,46 @@
 
             worker.onmessage = (e) => {
                 if (e.data.reset) {
-                    // reset UI: ย้ายกลับมาใต้ h1
-                    timeButton.style.display = "none";
+                    // สร้างปุ่มใหม่ใต้ h1 แสดงวัน/เวลา
+                    timeButton.style.display = "inline";
                     timeButton.style.position = "static";
-                    startButton.style.display = "inline";
+                    timeButton.style.margin = "5px 0";
+                    timeButton.textContent = new Date().toString();
+                    timeButton.style.backgroundColor = lastBgColor;
+                    timeButton.style.color = lastTextColor;
+
+                    // เพิ่ม event ให้กดแล้วเด้งไปมุมขวาบนได้
+                    timeButton.onclick = togglePosition;
                 } else {
                     timeButton.textContent = e.data.timeString;
-
-                    // เปลี่ยนสีพื้นหลังและสีตัวอักษร (ไม่ให้ซ้ำกัน)
                     timeButton.style.backgroundColor = e.data.bgColor;
                     timeButton.style.color = e.data.textColor;
+
+                    lastBgColor = e.data.bgColor;
+                    lastTextColor = e.data.textColor;
                 }
             };
 
             function toggleTime() {
                 if (!running) {
                     startButton.style.display = "none";
-                    timeButton.style.display = "inline"; // แสดงทันที
+                    timeButton.style.display = "inline";
 
-                    // ย้ายไปมุมขวาบน
+                    // ย้ายปุ่มไปมุมขวาบน
                     timeButton.style.position = "fixed";
-                    timeButton.style.top = "10px";
-                    timeButton.style.right = "10px";
+                    timeButton.style.top = "0px";
+                    timeButton.style.right = "0px";
+                    timeButton.style.margin = "0";
+                    timeButton.style.borderRadius = "0";
+                    timeButton.style.padding = "5px 10px";
 
-                    // ส่งคำสั่งให้ Worker เริ่มส่งเวลา
                     worker.postMessage({ command: 'start' });
 
-                    // อัปเดตเวลาและสีครั้งแรกทันทีโดยไม่ต้องรอ Worker
+                    // อัปเดตครั้งแรก
                     const now = new Date();
-                    const timeString = now.toString();
-                    const bgColor = "#000000"; // หรือใช้สีเริ่มต้นใดก็ได้
-                    const textColor = "#FFFFFF";
-                    timeButton.textContent = timeString;
-                    timeButton.style.backgroundColor = bgColor;
-                    timeButton.style.color = textColor;
+                    timeButton.textContent = now.toString();
+                    timeButton.style.backgroundColor = lastBgColor;
+                    timeButton.style.color = lastTextColor;
                 } else {
                     worker.postMessage({ command: 'stop' });
                 }
@@ -70,7 +80,28 @@
             startButton.addEventListener('click', toggleTime);
             timeButton.addEventListener('click', toggleTime);
 
+            // --- ฟังก์ชันสลับตำแหน่งปุ่มหลัง stop ---
+            let atTopRight = false;
 
+            function togglePosition() {
+                if (!atTopRight) {
+                    // เด้งไปมุมขวาบน
+                    timeButton.style.position = "fixed";
+                    timeButton.style.top = "0px";
+                    timeButton.style.right = "0px";
+                    timeButton.style.margin = "0";
+                    timeButton.style.borderRadius = "0";
+                    timeButton.style.padding = "5px 10px";
+                    atTopRight = true;
+                } else {
+                    // กลับใต้ h1
+                    timeButton.style.position = "static";
+                    timeButton.style.margin = "5px 0";
+                    timeButton.style.borderRadius = "";
+                    timeButton.style.padding = "";
+                    atTopRight = false;
+                }
+            }
 
         </script>
     </body>
