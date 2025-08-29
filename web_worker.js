@@ -1,16 +1,11 @@
 // web_worker.js
 let intervalId = null;
+let colorIndex = 0;
 
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
+// กำหนด 6 สี
+const colors = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F', '#9B59B6', '#1ABC9C'];
 
-// หาสีตัวอักษรที่ contrast กับ bg
+// ฟังก์ชันหาสีตัวอักษร contrast กับพื้นหลัง
 function getContrastColor(bgColor) {
     const r = parseInt(bgColor.substr(1, 2), 16);
     const g = parseInt(bgColor.substr(3, 2), 16);
@@ -23,15 +18,18 @@ onmessage = function(e) {
     const command = e.data.command;
 
     if (command === 'start') {
+        colorIndex = 0; // เริ่มจากสีแรกเสมอ
         if (!intervalId) {
             intervalId = setInterval(() => {
                 const now = new Date();
                 const timeString = now.toString();
 
-                const bgColor = getRandomColor();
+                const bgColor = colors[colorIndex];
                 const textColor = getContrastColor(bgColor);
 
                 postMessage({ timeString, bgColor, textColor });
+
+                colorIndex = (colorIndex + 1) % colors.length; // วนไปเรื่อยๆ
             }, 1000);
         }
     } else if (command === 'stop') {
