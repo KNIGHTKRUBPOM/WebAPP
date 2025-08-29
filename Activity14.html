@@ -5,11 +5,73 @@
         <div id="maincontainer"></div>
         <script>
             const container = document.getElementById('maincontainer');
+
+            // Title
             const title = document.createElement('h1');
             title.textContent = "Exercise 14: JavaScript&DOM";
             container.appendChild(title);
-            
-            
+
+            // ปุ่มเริ่มต้น
+            const startButton = document.createElement('button');
+            startButton.textContent = "Click me to display Date and Time";
+            container.appendChild(startButton);
+
+            // ปุ่มแสดงเวลา
+            const timeButton = document.createElement('button');
+            timeButton.style.display = "none";
+            container.appendChild(timeButton);
+
+            // Web Worker
+            const worker = new Worker('web_worker.js');
+            let running = false;
+
+            worker.onmessage = (e) => {
+                if (e.data.reset) {
+                    // reset UI: ย้ายกลับมาใต้ h1
+                    timeButton.style.display = "none";
+                    timeButton.style.position = "static";
+                    startButton.style.display = "inline";
+                } else {
+                    timeButton.textContent = e.data.timeString;
+
+                    // เปลี่ยนสีพื้นหลังและสีตัวอักษร (ไม่ให้ซ้ำกัน)
+                    timeButton.style.backgroundColor = e.data.bgColor;
+                    timeButton.style.color = e.data.textColor;
+                }
+            };
+
+            function toggleTime() {
+                if (!running) {
+                    startButton.style.display = "none";
+                    timeButton.style.display = "inline"; // แสดงทันที
+
+                    // ย้ายไปมุมขวาบน
+                    timeButton.style.position = "fixed";
+                    timeButton.style.top = "10px";
+                    timeButton.style.right = "10px";
+
+                    // ส่งคำสั่งให้ Worker เริ่มส่งเวลา
+                    worker.postMessage({ command: 'start' });
+
+                    // อัปเดตเวลาและสีครั้งแรกทันทีโดยไม่ต้องรอ Worker
+                    const now = new Date();
+                    const timeString = now.toString();
+                    const bgColor = "#000000"; // หรือใช้สีเริ่มต้นใดก็ได้
+                    const textColor = "#FFFFFF";
+                    timeButton.textContent = timeString;
+                    timeButton.style.backgroundColor = bgColor;
+                    timeButton.style.color = textColor;
+                } else {
+                    worker.postMessage({ command: 'stop' });
+                }
+                running = !running;
+            }
+
+            startButton.addEventListener('click', toggleTime);
+            timeButton.addEventListener('click', toggleTime);
+
+
+
         </script>
     </body>
 </html>
