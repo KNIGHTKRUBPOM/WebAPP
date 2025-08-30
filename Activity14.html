@@ -65,11 +65,11 @@
 
                     worker.postMessage({ command: 'start' });
 
-                    // อัปเดตครั้งแรก
+                    // --- อัปเดตครั้งแรก (แก้ตรงนี้ให้ขึ้นทันที + สีแดง) ---
+                    // --- อัปเดตครั้งแรก (แก้ตรงนี้ให้ขึ้นทันที + สีแดง) ---
                     const now = new Date();
                     timeButton.textContent = now.toString();
-                    timeButton.style.backgroundColor = lastBgColor;
-                    timeButton.style.color = lastTextColor;
+                    
                 } else {
                     worker.postMessage({ command: 'stop' });
                 }
