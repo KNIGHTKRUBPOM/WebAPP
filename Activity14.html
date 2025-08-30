@@ -101,7 +101,66 @@
                     atTopRight = false;
                 }
             }
-            
+
+            // สร้างปุ่ม
+            // สร้างปุ่ม
+            const personalBtn = document.createElement("button");
+            personalBtn.textContent = "Personal Info";
+
+            // ทำให้มีเส้นใต้ (textDecoration)
+            personalBtn.style.textDecoration = "underline";
+            personalBtn.style.border = "none";
+            personalBtn.style.background = "transparent";
+            personalBtn.style.cursor = "pointer";
+            personalBtn.style.fontSize = "16px";
+
+            // ✅ Fix ตำแหน่งปุ่มให้อยู่กับที่
+            personalBtn.style.position = "fixed";
+            personalBtn.style.top = "130px";   // เดิม 60px → เลื่อนลงมา 20px
+            personalBtn.style.left = "20px";
+            personalBtn.style.display = "block";
+
+            // hover effect โดยใช้ JS ไม่ใช้ CSS
+            personalBtn.addEventListener("mouseenter", () => {
+                personalBtn.style.backgroundColor = "yellow";
+            });
+            personalBtn.addEventListener("mouseleave", () => {
+                personalBtn.style.backgroundColor = "transparent";
+            });
+
+            // element สำหรับเก็บข้อมูล (สร้าง ul)
+            const infoList = document.createElement("ul");
+            infoList.style.marginLeft = "20px";  
+            infoList.style.position = "fixed";    // ✅ Fix ตำแหน่งเช่นกัน
+            infoList.style.top = "150px";         // ให้อยู่ใต้ปุ่ม Personal Info (80px + 30px ประมาณ)
+            infoList.style.left = "40px";
+            infoList.style.display = "none";      // เริ่มต้นซ่อน
+
+            // เพิ่มข้อมูล
+            const infoItems = [
+                "Athichanan Chanthamit ID : 67015155",
+                "Subject : Web App",
+                "Semester : 2"
+            ];
+            infoItems.forEach(text => {
+                const li = document.createElement("li");
+                li.textContent = text;
+                infoList.appendChild(li);
+            });
+
+            // toggle แสดง/ซ่อน เมื่อกดปุ่ม
+            let infoVisible = false;
+            personalBtn.addEventListener("click", () => {
+                infoVisible = !infoVisible;
+                infoList.style.display = infoVisible ? "block" : "none";
+            });
+
+            // เพิ่มปุ่มและข้อมูลลง container
+            container.appendChild(personalBtn);
+            container.appendChild(infoList);
+
+
+
         </script>
     </body>
 </html>
