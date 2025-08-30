@@ -1,168 +1,209 @@
 <!DOCTYPE html>
 <html>
-    <head></head>
-    <body>
-        <div id="maincontainer"></div>
-        <script>
-            const container = document.getElementById('maincontainer');
-            // Title
-            const title = document.createElement('h1');
-            title.textContent = "Exercise 14: JavaScript&DOM";
-            container.appendChild(title);
+<head></head>
+<body>
+<div id="maincontainer"></div>
+<script>
+const container = document.getElementById('maincontainer');
 
-            // ปุ่มเริ่มต้น
-            let startButton = document.createElement('button');
-            startButton.textContent = "Click me to display Date and Time";
-            container.appendChild(startButton);
+// ======= Title =======
+const title = document.createElement('h1');
+title.textContent = "Exercise 14: JavaScript&DOM";
+container.appendChild(title);
 
-            // ปุ่มแสดงเวลา
-            let timeButton = document.createElement('button');
-            timeButton.style.display = "none";
-            container.appendChild(timeButton);
+// ======= ปุ่มเริ่มต้น =======
+let startButton = document.createElement('button');
+startButton.textContent = "Click me to display Date and Time";
+container.appendChild(startButton);
 
-            // ตัวเก็บสีล่าสุด
-            let lastBgColor = "#000000";
-            let lastTextColor = "#FFFFFF";
+// ======= ปุ่มแสดงเวลา =======
+let timeButton = document.createElement('button');
+timeButton.style.display = "none";
+container.appendChild(timeButton);
 
-            // Web Worker
-            const worker = new Worker('web_worker.js');
-            let running = false;
+// ตัวเก็บสีล่าสุด
+let lastBgColor = "#000000";
+let lastTextColor = "#FFFFFF";
 
-            worker.onmessage = (e) => {
-                if (e.data.reset) {
-                    // สร้างปุ่มใหม่ใต้ h1 แสดงวัน/เวลา
-                    timeButton.style.display = "inline";
-                    timeButton.style.position = "static";
-                    timeButton.style.margin = "5px 0";
-                    timeButton.textContent = new Date().toString();
-                    timeButton.style.backgroundColor = lastBgColor;
-                    timeButton.style.color = lastTextColor;
+// ======= Web Worker =======
+const worker = new Worker('web_worker.js');
+let running = false;
 
-                    // เพิ่ม event ให้กดแล้วเด้งไปมุมขวาบนได้
-                    timeButton.onclick = togglePosition;
-                } else {
-                    timeButton.textContent = e.data.timeString;
-                    timeButton.style.backgroundColor = e.data.bgColor;
-                    timeButton.style.color = e.data.textColor;
+worker.onmessage = (e) => {
+    if (e.data.reset) {
+        timeButton.style.display = "inline";
+        timeButton.style.position = "static";
+        timeButton.style.margin = "5px 0";
+        timeButton.textContent = new Date().toString();
+        timeButton.style.backgroundColor = lastBgColor;
+        timeButton.style.color = lastTextColor;
+        timeButton.onclick = togglePosition;
+    } else {
+        timeButton.textContent = e.data.timeString;
+        timeButton.style.backgroundColor = e.data.bgColor;
+        timeButton.style.color = e.data.textColor;
+        lastBgColor = e.data.bgColor;
+        lastTextColor = e.data.textColor;
+    }
+};
 
-                    lastBgColor = e.data.bgColor;
-                    lastTextColor = e.data.textColor;
-                }
-            };
+function toggleTime() {
+    if (!running) {
+        startButton.style.display = "none";
+        timeButton.style.display = "inline";
+        timeButton.style.position = "fixed";
+        timeButton.style.top = "0px";
+        timeButton.style.right = "0px";
+        timeButton.style.margin = "0";
+        timeButton.style.borderRadius = "0";
+        timeButton.style.padding = "5px 10px";
 
-            function toggleTime() {
-                if (!running) {
-                    startButton.style.display = "none";
-                    timeButton.style.display = "inline";
+        worker.postMessage({ command: 'start' });
+        const now = new Date();
+        timeButton.textContent = now.toString();
+    } else {
+        worker.postMessage({ command: 'stop' });
+    }
+    running = !running;
+}
+startButton.addEventListener('click', toggleTime);
+timeButton.addEventListener('click', toggleTime);
 
-                    // ย้ายปุ่มไปมุมขวาบน
-                    timeButton.style.position = "fixed";
-                    timeButton.style.top = "0px";
-                    timeButton.style.right = "0px";
-                    timeButton.style.margin = "0";
-                    timeButton.style.borderRadius = "0";
-                    timeButton.style.padding = "5px 10px";
+let atTopRight = false;
+function togglePosition() {
+    if (!atTopRight) {
+        timeButton.style.position = "fixed";
+        timeButton.style.top = "0px";
+        timeButton.style.right = "0px";
+        timeButton.style.margin = "0";
+        timeButton.style.borderRadius = "0";
+        timeButton.style.padding = "5px 10px";
+        atTopRight = true;
+    } else {
+        timeButton.style.position = "static";
+        timeButton.style.margin = "5px 0";
+        timeButton.style.borderRadius = "";
+        timeButton.style.padding = "";
+        atTopRight = false;
+    }
+}
 
-                    worker.postMessage({ command: 'start' });
+// ======= Personal Info =======
+const personalBtn = document.createElement("button");
+personalBtn.textContent = "Personal Info";
+personalBtn.style.textDecoration = "underline";
+personalBtn.style.border = "none";
+personalBtn.style.background = "transparent";
+personalBtn.style.cursor = "pointer";
+personalBtn.style.fontSize = "16px";
+personalBtn.style.color = "pink";
+personalBtn.style.position = "fixed";
+personalBtn.style.top = "130px";
+personalBtn.style.left = "20px";
+personalBtn.style.display = "block";
+personalBtn.addEventListener("mouseenter", ()=>{
+    personalBtn.style.backgroundColor = "yellow";
+    personalBtn.style.color = "blue";
+});
+personalBtn.addEventListener("mouseleave", ()=>{
+    personalBtn.style.backgroundColor = "transparent";
+    personalBtn.style.color = "pink";
+});
 
-                    // --- อัปเดตครั้งแรก (แก้ตรงนี้ให้ขึ้นทันที + สีแดง) ---
-                    // --- อัปเดตครั้งแรก (แก้ตรงนี้ให้ขึ้นทันที + สีแดง) ---
-                    const now = new Date();
-                    timeButton.textContent = now.toString();
-                    
-                } else {
-                    worker.postMessage({ command: 'stop' });
-                }
-                running = !running;
-            }
+// info list
+const infoList = document.createElement("ul");
+infoList.style.marginLeft = "20px";  
+infoList.style.position = "fixed";
+infoList.style.top = "160px";
+infoList.style.left = "40px";
+infoList.style.display = "none";
 
-            startButton.addEventListener('click', toggleTime);
-            timeButton.addEventListener('click', toggleTime);
+const infoItems = [
+    "Athichanan Chanthamit ID : 67015155",
+    "Subject : Web App",
+    "Semester : 2"
+];
+infoItems.forEach(text=>{
+    const li = document.createElement("li");
+    li.textContent = text;
+    infoList.appendChild(li);
+});
 
-            // --- ฟังก์ชันสลับตำแหน่งปุ่มหลัง stop ---
-            let atTopRight = false;
+let infoVisible = false;
+personalBtn.addEventListener("click", ()=>{
+    infoVisible = !infoVisible;
+    infoList.style.display = infoVisible ? "block" : "none";
 
-            function togglePosition() {
-                if (!atTopRight) {
-                    // เด้งไปมุมขวาบน
-                    timeButton.style.position = "fixed";
-                    timeButton.style.top = "0px";
-                    timeButton.style.right = "0px";
-                    timeButton.style.margin = "0";
-                    timeButton.style.borderRadius = "0";
-                    timeButton.style.padding = "5px 10px";
-                    atTopRight = true;
-                } else {
-                    // กลับใต้ h1
-                    timeButton.style.position = "static";
-                    timeButton.style.margin = "5px 0";
-                    timeButton.style.borderRadius = "";
-                    timeButton.style.padding = "";
-                    atTopRight = false;
-                }
-            }
+    // เลื่อน container หลักของ Snapshots + ปุ่ม + รูป
+    const offset = infoVisible ? 80 : 0;
+    mainSection.style.top = 145 + offset + "px";
+});
 
-            // สร้างปุ่ม
-            // สร้างปุ่ม
-            const personalBtn = document.createElement("button");
-            personalBtn.textContent = "Personal Info";
+container.appendChild(personalBtn);
+container.appendChild(infoList);
 
-            // ทำให้มีเส้นใต้ (textDecoration)
-            personalBtn.style.textDecoration = "underline";
-            personalBtn.style.border = "none";
-            personalBtn.style.background = "transparent";
-            personalBtn.style.cursor = "pointer";
-            personalBtn.style.fontSize = "16px";
-            personalBtn.style.color = "pink";
-            // ✅ Fix ตำแหน่งปุ่มให้อยู่กับที่
-            personalBtn.style.position = "fixed";
-            personalBtn.style.top = "130px";   // เดิม 60px → เลื่อนลงมา 20px
-            personalBtn.style.left = "20px";
-            personalBtn.style.display = "block";
+// ======= Container หลักสำหรับ Snapshots + ปุ่ม + รูป =======
+const mainSection = document.createElement("div");
+mainSection.style.position = "fixed";
+mainSection.style.top = "145px";
+mainSection.style.left = "20px";
 
-            // hover effect โดยใช้ JS ไม่ใช้ CSS
-            personalBtn.addEventListener("mouseenter", () => {
-                personalBtn.style.backgroundColor = "yellow";
-                personalBtn.style.color = "blue"; // เปลี่ยนฟอนต์เป็นสีน้ำเงิน
-            });
-            personalBtn.addEventListener("mouseleave", () => {
-                personalBtn.style.backgroundColor = "transparent";
-                personalBtn.style.color = "pink"; // กลับเป็นสีชมพูเดิม
-            });
+// Snapshots
+const snapshotTitle = document.createElement("h1");
+snapshotTitle.textContent = "Snapshots";
+mainSection.appendChild(snapshotTitle);
 
-            // element สำหรับเก็บข้อมูล (สร้าง ul)
-            const infoList = document.createElement("ul");
-            infoList.style.marginLeft = "20px";  
-            infoList.style.position = "fixed";    // ✅ Fix ตำแหน่งเช่นกัน
-            infoList.style.top = "150px";         // ให้อยู่ใต้ปุ่ม Personal Info (80px + 30px ประมาณ)
-            infoList.style.left = "40px";
-            infoList.style.display = "none";      // เริ่มต้นซ่อน
+// ปุ่ม 4 ปุ่ม
+const buttonImages = {
+    "Firework": "https://www.ontariosciencecentre.ca/media/2093/fireworkscircle3.jpg",
+    "Knight": "https://m.media-amazon.com/images/I/61LrV6np+4L._UF894,1000_QL80_.jpg",
+    "Bufflo": "https://cdn.britannica.com/85/217285-050-DC4FA4AB/cape-buffalo-syncerus-caffer.jpg",
+    "Game": "https://store-images.s-microsoft.com/image/apps.808.14492077886571533.be42f4bd-887b-4430-8ed0-622341b4d2b0.c8274c53-105e-478b-9f4b-41b8088210a3?q=90&w=512&h=768&mode=crop&format=jpg&background=%23FFFFFF"
+};
 
-            // เพิ่มข้อมูล
-            const infoItems = [
-                "Athichanan Chanthamit ID : 67015155",
-                "Subject : Web App",
-                "Semester : 2"
-            ];
-            infoItems.forEach(text => {
-                const li = document.createElement("li");
-                li.textContent = text;
-                infoList.appendChild(li);
-            });
+const buttonContainer = document.createElement("div");
+buttonContainer.style.display = "flex";
+buttonContainer.style.flexDirection = "column";
+buttonContainer.style.gap = "10px";
+buttonContainer.style.marginTop = "10px";
 
-            // toggle แสดง/ซ่อน เมื่อกดปุ่ม
-            let infoVisible = false;
-            personalBtn.addEventListener("click", () => {
-                infoVisible = !infoVisible;
-                infoList.style.display = infoVisible ? "block" : "none";
-            });
+const displayImg = document.createElement("img");
+displayImg.style.width = "400px";
+displayImg.style.height = "auto";
+displayImg.style.display = "block"; 
+displayImg.src = "https://t3.ftcdn.net/jpg/04/56/81/90/360_F_456819036_dCuqK6evCWF5RrMA33kmCcEMIzGXRkcj.jpg";
+displayImg.style.marginTop = "20px";
 
-            // เพิ่มปุ่มและข้อมูลลง container
-            container.appendChild(personalBtn);
-            container.appendChild(infoList);
+const buttonItems = ["Firework", "Knight", "Bufflo", "Game"];
+buttonItems.forEach(text=>{
+    const btn = document.createElement("button");
+    btn.innerHTML = `<span style="color:black">• </span><span style="color:blue; text-decoration:underline;">${text}</span>`;
+    btn.style.border = "none";
+    btn.style.background = "transparent";
+    btn.style.cursor = "pointer";
+    btn.style.fontSize = "16px";
+    btn.style.textAlign = "left";
+    btn.style.padding = "0";
 
+    btn.addEventListener("mouseenter", ()=>{
+        btn.querySelector("span:nth-child(2)").style.color = "red";
+    });
+    btn.addEventListener("mouseleave", ()=>{
+        btn.querySelector("span:nth-child(2)").style.color = "blue";
+    });
 
+    btn.addEventListener("click", ()=>{
+        displayImg.src = buttonImages[text];
+    });
 
-        </script>
-    </body>
+    buttonContainer.appendChild(btn);
+});
+
+mainSection.appendChild(buttonContainer);
+mainSection.appendChild(displayImg);
+
+container.appendChild(mainSection);
+
+</script>
+</body>
 </html>
