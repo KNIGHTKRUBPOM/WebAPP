@@ -113,7 +113,7 @@
             personalBtn.style.background = "transparent";
             personalBtn.style.cursor = "pointer";
             personalBtn.style.fontSize = "16px";
-
+            personalBtn.style.color = "pink";
             // ✅ Fix ตำแหน่งปุ่มให้อยู่กับที่
             personalBtn.style.position = "fixed";
             personalBtn.style.top = "130px";   // เดิม 60px → เลื่อนลงมา 20px
@@ -123,9 +123,11 @@
             // hover effect โดยใช้ JS ไม่ใช้ CSS
             personalBtn.addEventListener("mouseenter", () => {
                 personalBtn.style.backgroundColor = "yellow";
+                personalBtn.style.color = "blue"; // เปลี่ยนฟอนต์เป็นสีน้ำเงิน
             });
             personalBtn.addEventListener("mouseleave", () => {
                 personalBtn.style.backgroundColor = "transparent";
+                personalBtn.style.color = "pink"; // กลับเป็นสีชมพูเดิม
             });
 
             // element สำหรับเก็บข้อมูล (สร้าง ul)
