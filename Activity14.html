@@ -158,7 +158,7 @@ const buttonImages = {
     "Firework": "https://www.ontariosciencecentre.ca/media/2093/fireworkscircle3.jpg",
     "Knight": "https://m.media-amazon.com/images/I/61LrV6np+4L._UF894,1000_QL80_.jpg",
     "Bufflo": "https://cdn.britannica.com/85/217285-050-DC4FA4AB/cape-buffalo-syncerus-caffer.jpg",
-    "Game": "https://store-images.s-microsoft.com/image/apps.808.14492077886571533.be42f4bd-887b-4430-8ed0-622341b4d2b0.c8274c53-105e-478b-9f4b-41b8088210a3?q=90&w=512&h=768&mode=crop&format=jpg&background=%23FFFFFF"
+    "Game": "https://devimages-cdn.apple.com/wwdc-services/articles/images/3D5F5DD3-14F7-4384-94C0-798D15EE7CD7/2048.jpeg"
 };
 
 const buttonContainer = document.createElement("div");
@@ -166,12 +166,13 @@ buttonContainer.style.display = "flex";
 buttonContainer.style.flexDirection = "column";
 buttonContainer.style.gap = "10px";
 buttonContainer.style.marginTop = "10px";
+buttonContainer.style.marginLeft = "25px";
 
 const displayImg = document.createElement("img");
 displayImg.style.width = "400px";
 displayImg.style.height = "auto";
 displayImg.style.display = "block"; 
-displayImg.src = "https://t3.ftcdn.net/jpg/04/56/81/90/360_F_456819036_dCuqK6evCWF5RrMA33kmCcEMIzGXRkcj.jpg";
+displayImg.src = "https://la.kmitl.ac.th/sites/liberalarts/files/styles/webp/public/2023-09/KMITL%202023%20letterhead%20template-03_%E0%B8%AB%E0%B8%B1%E0%B8%A7.png.webp?itok=5PvCz71K";
 displayImg.style.marginTop = "20px";
 
 const buttonItems = ["Firework", "Knight", "Bufflo", "Game"];
@@ -184,13 +185,6 @@ buttonItems.forEach(text=>{
     btn.style.fontSize = "16px";
     btn.style.textAlign = "left";
     btn.style.padding = "0";
-
-    btn.addEventListener("mouseenter", ()=>{
-        btn.querySelector("span:nth-child(2)").style.color = "red";
-    });
-    btn.addEventListener("mouseleave", ()=>{
-        btn.querySelector("span:nth-child(2)").style.color = "blue";
-    });
 
     btn.addEventListener("click", ()=>{
         displayImg.src = buttonImages[text];
