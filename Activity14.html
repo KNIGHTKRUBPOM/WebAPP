@@ -1,203 +1,205 @@
 <!DOCTYPE html>
 <html>
-<head></head>
+<head>
+
+</head>
 <body>
 <div id="maincontainer"></div>
-<script>
-const container = document.getElementById('maincontainer');
+    <script>
+            const container = document.getElementById('maincontainer');
 
-// ======= Title =======
-const title = document.createElement('h1');
-title.textContent = "Exercise 14: JavaScript&DOM";
-container.appendChild(title);
+            // ======= Title =======
+            const title = document.createElement('h1');
+            title.textContent = "Exercise 14: JavaScript&DOM";
+            container.appendChild(title);
 
-// ======= ปุ่มเริ่มต้น =======
-let startButton = document.createElement('button');
-startButton.textContent = "Click me to display Date and Time";
-container.appendChild(startButton);
+            // ======= ปุ่มเริ่มต้น =======
+            let startButton = document.createElement('button');
+            startButton.textContent = "Click me to display Date and Time";
+            container.appendChild(startButton);
 
-// ======= ปุ่มแสดงเวลา =======
-let timeButton = document.createElement('button');
-timeButton.style.display = "none";
-container.appendChild(timeButton);
+            // ======= ปุ่มแสดงเวลา =======
+            let timeButton = document.createElement('button');
+            timeButton.style.display = "none";
+            container.appendChild(timeButton);
 
-// ตัวเก็บสีล่าสุด
-let lastBgColor = "#000000";
-let lastTextColor = "#FFFFFF";
+            // ตัวเก็บสีล่าสุด
+            let lastBgColor = "#000000";
+            let lastTextColor = "#FFFFFF";
 
-// ======= Web Worker =======
-const worker = new Worker('web_worker.js');
-let running = false;
+            // ======= Web Worker =======
+            const worker = new Worker('web_worker.js');
+            let running = false;
 
-worker.onmessage = (e) => {
-    if (e.data.reset) {
-        timeButton.style.display = "inline";
-        timeButton.style.position = "static";
-        timeButton.style.margin = "5px 0";
-        timeButton.textContent = new Date().toString();
-        timeButton.style.backgroundColor = lastBgColor;
-        timeButton.style.color = lastTextColor;
-        timeButton.onclick = togglePosition;
-    } else {
-        timeButton.textContent = e.data.timeString;
-        timeButton.style.backgroundColor = e.data.bgColor;
-        timeButton.style.color = e.data.textColor;
-        lastBgColor = e.data.bgColor;
-        lastTextColor = e.data.textColor;
-    }
-};
+            worker.onmessage = (e) => {
+                if (e.data.reset) {
+                    timeButton.style.display = "inline";
+                    timeButton.style.position = "static";
+                    timeButton.style.margin = "5px 0";
+                    timeButton.textContent = new Date().toString();
+                    timeButton.style.backgroundColor = lastBgColor;
+                    timeButton.style.color = lastTextColor;
+                    timeButton.onclick = togglePosition;
+                } else {
+                    timeButton.textContent = e.data.timeString;
+                    timeButton.style.backgroundColor = e.data.bgColor;
+                    timeButton.style.color = e.data.textColor;
+                    lastBgColor = e.data.bgColor;
+                    lastTextColor = e.data.textColor;
+                }
+            };
 
-function toggleTime() {
-    if (!running) {
-        startButton.style.display = "none";
-        timeButton.style.display = "inline";
-        timeButton.style.position = "fixed";
-        timeButton.style.top = "0px";
-        timeButton.style.right = "0px";
-        timeButton.style.margin = "0";
-        timeButton.style.borderRadius = "0";
-        timeButton.style.padding = "5px 10px";
+            function toggleTime() {
+                if (!running) {
+                    startButton.style.display = "none";
+                    timeButton.style.display = "inline";
+                    timeButton.style.position = "fixed";
+                    timeButton.style.top = "0px";
+                    timeButton.style.right = "0px";
+                    timeButton.style.margin = "0";
+                    timeButton.style.borderRadius = "0";
+                    timeButton.style.padding = "5px 10px";
 
-        worker.postMessage({ command: 'start' });
-        const now = new Date();
-        timeButton.textContent = now.toString();
-    } else {
-        worker.postMessage({ command: 'stop' });
-    }
-    running = !running;
-}
-startButton.addEventListener('click', toggleTime);
-timeButton.addEventListener('click', toggleTime);
+                    worker.postMessage({ command: 'start' });
+                    const now = new Date();
+                    timeButton.textContent = now.toString();
+                } else {
+                    worker.postMessage({ command: 'stop' });
+                }
+                running = !running;
+            }
+            startButton.addEventListener('click', toggleTime);
+            timeButton.addEventListener('click', toggleTime);
 
-let atTopRight = false;
-function togglePosition() {
-    if (!atTopRight) {
-        timeButton.style.position = "fixed";
-        timeButton.style.top = "0px";
-        timeButton.style.right = "0px";
-        timeButton.style.margin = "0";
-        timeButton.style.borderRadius = "0";
-        timeButton.style.padding = "5px 10px";
-        atTopRight = true;
-    } else {
-        timeButton.style.position = "static";
-        timeButton.style.margin = "5px 0";
-        timeButton.style.borderRadius = "";
-        timeButton.style.padding = "";
-        atTopRight = false;
-    }
-}
+            let atTopRight = false;
+            function togglePosition() {
+                if (!atTopRight) {
+                    timeButton.style.position = "fixed";
+                    timeButton.style.top = "0px";
+                    timeButton.style.right = "0px";
+                    timeButton.style.margin = "0";
+                    timeButton.style.borderRadius = "0";
+                    timeButton.style.padding = "5px 10px";
+                    atTopRight = true;
+                } else {
+                    timeButton.style.position = "static";
+                    timeButton.style.margin = "5px 0";
+                    timeButton.style.borderRadius = "";
+                    timeButton.style.padding = "";
+                    atTopRight = false;
+                }
+            }
 
-// ======= Personal Info =======
-const personalBtn = document.createElement("button");
-personalBtn.textContent = "Personal Info";
-personalBtn.style.textDecoration = "underline";
-personalBtn.style.border = "none";
-personalBtn.style.background = "transparent";
-personalBtn.style.cursor = "pointer";
-personalBtn.style.fontSize = "16px";
-personalBtn.style.color = "pink";
-personalBtn.style.position = "fixed";
-personalBtn.style.top = "130px";
-personalBtn.style.left = "20px";
-personalBtn.style.display = "block";
-personalBtn.addEventListener("mouseenter", ()=>{
-    personalBtn.style.backgroundColor = "yellow";
-    personalBtn.style.color = "blue";
-});
-personalBtn.addEventListener("mouseleave", ()=>{
-    personalBtn.style.backgroundColor = "transparent";
-    personalBtn.style.color = "pink";
-});
+            // ======= Personal Info =======
+            const personalBtn = document.createElement("button");
+            personalBtn.textContent = "Personal Info";
+            personalBtn.style.textDecoration = "underline";
+            personalBtn.style.border = "none";
+            personalBtn.style.background = "transparent";
+            personalBtn.style.cursor = "pointer";
+            personalBtn.style.fontSize = "16px";
+            personalBtn.style.color = "pink";
+            personalBtn.style.position = "fixed";
+            personalBtn.style.top = "130px";
+            personalBtn.style.left = "20px";
+            personalBtn.style.display = "block";
+            personalBtn.addEventListener("mouseenter", ()=>{
+                personalBtn.style.backgroundColor = "yellow";
+                personalBtn.style.color = "blue";
+            });
+            personalBtn.addEventListener("mouseleave", ()=>{
+                personalBtn.style.backgroundColor = "transparent";
+                personalBtn.style.color = "pink";
+            });
 
-// info list
-const infoList = document.createElement("ul");
-infoList.style.marginLeft = "20px";  
-infoList.style.position = "fixed";
-infoList.style.top = "160px";
-infoList.style.left = "40px";
-infoList.style.display = "none";
+            // info list
+            const infoList = document.createElement("ul");
+            infoList.style.marginLeft = "20px";  
+            infoList.style.position = "fixed";
+            infoList.style.top = "160px";
+            infoList.style.left = "40px";
+            infoList.style.display = "none";
 
-const infoItems = [
-    "Athichanan Chanthamit ID : 67015155",
-    "Subject : Web App",
-    "Semester : 2"
-];
-infoItems.forEach(text=>{
-    const li = document.createElement("li");
-    li.textContent = text;
-    infoList.appendChild(li);
-});
+            const infoItems = [
+                "Athichanan Chanthamit ID : 67015155",
+                "Subject : Web App",
+                "Semester : 2"
+            ];
+            infoItems.forEach(text=>{
+                const li = document.createElement("li");
+                li.textContent = text;
+                infoList.appendChild(li);
+            });
 
-let infoVisible = false;
-personalBtn.addEventListener("click", ()=>{
-    infoVisible = !infoVisible;
-    infoList.style.display = infoVisible ? "block" : "none";
+            let infoVisible = false;
+            personalBtn.addEventListener("click", ()=>{
+                infoVisible = !infoVisible;
+                infoList.style.display = infoVisible ? "block" : "none";
 
-    // เลื่อน container หลักของ Snapshots + ปุ่ม + รูป
-    const offset = infoVisible ? 80 : 0;
-    mainSection.style.top = 145 + offset + "px";
-});
+                // เลื่อน container หลักของ Snapshots + ปุ่ม + รูป
+                const offset = infoVisible ? 80 : 0;
+                mainSection.style.top = 145 + offset + "px";
+            });
 
-container.appendChild(personalBtn);
-container.appendChild(infoList);
+            container.appendChild(personalBtn);
+            container.appendChild(infoList);
 
-// ======= Container หลักสำหรับ Snapshots + ปุ่ม + รูป =======
-const mainSection = document.createElement("div");
-mainSection.style.position = "fixed";
-mainSection.style.top = "145px";
-mainSection.style.left = "20px";
+            // ======= Container หลักสำหรับ Snapshots + ปุ่ม + รูป =======
+            const mainSection = document.createElement("div");
+            mainSection.style.position = "fixed";
+            mainSection.style.top = "145px";
+            mainSection.style.left = "20px";
 
-// Snapshots
-const snapshotTitle = document.createElement("h1");
-snapshotTitle.textContent = "Snapshots";
-mainSection.appendChild(snapshotTitle);
+            // Snapshots
+            const snapshotTitle = document.createElement("h1");
+            snapshotTitle.textContent = "Snapshots";
+            mainSection.appendChild(snapshotTitle);
 
-// ปุ่ม 4 ปุ่ม
-const buttonImages = {
-    "Firework": "https://www.ontariosciencecentre.ca/media/2093/fireworkscircle3.jpg",
-    "Knight": "https://m.media-amazon.com/images/I/61LrV6np+4L._UF894,1000_QL80_.jpg",
-    "Bufflo": "https://cdn.britannica.com/85/217285-050-DC4FA4AB/cape-buffalo-syncerus-caffer.jpg",
-    "Game": "https://devimages-cdn.apple.com/wwdc-services/articles/images/3D5F5DD3-14F7-4384-94C0-798D15EE7CD7/2048.jpeg"
-};
+            // ปุ่ม 4 ปุ่ม
+            const buttonImages = {
+                "Firework": "https://www.ontariosciencecentre.ca/media/2093/fireworkscircle3.jpg",
+                "Knight": "https://m.media-amazon.com/images/I/61LrV6np+4L._UF894,1000_QL80_.jpg",
+                "Bufflo": "https://cdn.britannica.com/85/217285-050-DC4FA4AB/cape-buffalo-syncerus-caffer.jpg",
+                "Game": "https://devimages-cdn.apple.com/wwdc-services/articles/images/3D5F5DD3-14F7-4384-94C0-798D15EE7CD7/2048.jpeg"
+            };
 
-const buttonContainer = document.createElement("div");
-buttonContainer.style.display = "flex";
-buttonContainer.style.flexDirection = "column";
-buttonContainer.style.gap = "10px";
-buttonContainer.style.marginTop = "10px";
-buttonContainer.style.marginLeft = "25px";
+            const buttonContainer = document.createElement("div");
+            buttonContainer.style.display = "flex";
+            buttonContainer.style.flexDirection = "column";
+            buttonContainer.style.gap = "10px";
+            buttonContainer.style.marginTop = "10px";
+            buttonContainer.style.marginLeft = "25px";
 
-const displayImg = document.createElement("img");
-displayImg.style.width = "400px";
-displayImg.style.height = "auto";
-displayImg.style.display = "block"; 
-displayImg.src = "https://la.kmitl.ac.th/sites/liberalarts/files/styles/webp/public/2023-09/KMITL%202023%20letterhead%20template-03_%E0%B8%AB%E0%B8%B1%E0%B8%A7.png.webp?itok=5PvCz71K";
-displayImg.style.marginTop = "20px";
+            const displayImg = document.createElement("img");
+            displayImg.style.width = "400px";
+            displayImg.style.height = "auto";
+            displayImg.style.display = "block"; 
+            displayImg.src = "https://la.kmitl.ac.th/sites/liberalarts/files/styles/webp/public/2023-09/KMITL%202023%20letterhead%20template-03_%E0%B8%AB%E0%B8%B1%E0%B8%A7.png.webp?itok=5PvCz71K";
+            displayImg.style.marginTop = "20px";
 
-const buttonItems = ["Firework", "Knight", "Bufflo", "Game"];
-buttonItems.forEach(text=>{
-    const btn = document.createElement("button");
-    btn.innerHTML = `<span style="color:black">• </span><span style="color:blue; text-decoration:underline;">${text}</span>`;
-    btn.style.border = "none";
-    btn.style.background = "transparent";
-    btn.style.cursor = "pointer";
-    btn.style.fontSize = "16px";
-    btn.style.textAlign = "left";
-    btn.style.padding = "0";
+            const buttonItems = ["Firework", "Knight", "Bufflo", "Game"];
+            buttonItems.forEach(text=>{
+                const btn = document.createElement("button");
+                btn.innerHTML = `<span style="color:black">• </span><span style="color:blue; text-decoration:underline;">${text}</span>`;
+                btn.style.border = "none";
+                btn.style.background = "transparent";
+                btn.style.cursor = "pointer";
+                btn.style.fontSize = "16px";
+                btn.style.textAlign = "left";
+                btn.style.padding = "0";
 
-    btn.addEventListener("click", ()=>{
-        displayImg.src = buttonImages[text];
-    });
+                btn.addEventListener("click", ()=>{
+                    displayImg.src = buttonImages[text];
+                });
 
-    buttonContainer.appendChild(btn);
-});
+                buttonContainer.appendChild(btn);
+            });
 
-mainSection.appendChild(buttonContainer);
-mainSection.appendChild(displayImg);
+            mainSection.appendChild(buttonContainer);
+            mainSection.appendChild(displayImg);
 
-container.appendChild(mainSection);
+            container.appendChild(mainSection);
 
-</script>
+    </script>
 </body>
 </html>
